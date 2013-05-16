@@ -34,11 +34,11 @@ AceTestII 是我在 AceTest (https://github.com/AceFantasy/AceTest) 之后重新
 - 一个资源用以获取保存的所有请求实例 (默认是 ``?_method=read`` ).
 
 
-除此之后, 因为经常用到, 直接提供了一个附加功能, 就是把请求实例导出为文档, 默认资源地址是: ``?_method=export`` .
+除此之外, 因为经常用到, 直接提供了一个附加功能, 就是把请求实例导出为文档, 默认资源地址是: ``?_method=export`` .
 
 AceTestII 的核心是 ``index.html`` 文件, 数据的保存与导出需要后端服务来完成, ``index.html`` 只是发出请求.
 
-后端的实现项目中包括了一个 Python 的, 以 Tornado 框架为例的例子. 业务就是 ``read, create, export`` 三个方法.
+关于后端的实现, 项目中包括了一个 Python 的, 以 Tornado 框架为例的例子. 业务就是 ``read, create, export`` 三个方法.
 
 ``read`` 方法是获取所有已保存的请求实例(直接读取 json 数据文件):
 
