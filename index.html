@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html ng-app="AceTest">
+<head>
+<meta charset="utf-8" />
+<meta content="?_method=read" name="read-url" id="read-url" />
+<meta content="?_method=create" name="create-url" id="create-url" />
+<meta content="?_method=export" name="export-url" id="export-url" />
+
+
+<title>AceTest</title>
+
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" type="text/css" rel="stylesheet" media="all" />
+<style type="text/css" media="all">
+  #edit-form { margin-bottom: 40px; }
+  #edit-form .control-group { margin-bottom: 5px; }
+  #edit-form select, #edit-form textarea, #edit-form input { padding: 2px 6px; }
+  #edit-form select { height: 26px; line-height: 26px; }
+  #edit-form .form-actions { padding: 10px 20px; padding-left: 180px; }
+</style>
+<style type="text/css" media="all">
+  body{
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 12px !important;
+  }
+  select {
+    font-size: 12px;
+    height: 27px;
+  }
+  label {
+    cursor: default;
+  }
+  #footer {
+    margin: 20px auto; 
+    padding-right: 5px;
+    text-align: right;
+    font-size: 10px;
+    color: #bbb;
+    cursor: default;
+  }
+  #ver {
+    margin-left: 10px;  
+  }
+  .head {
+    border-bottom: 2px solid #0F6FFF;  
+    height: 40px;
+    line-height: 40px;
+    background-color: white;
+    position: fixed;
+    padding-top: 30px;
+    z-index: 1000;
+  }
+  .head > div {
+    display: block;
+    float: left;
+    margin-right: 30px;
+    height: 35px;
+  }
+
+  #logo{
+    font-size: 25px; 
+    font-weight: bold;
+  }
+
+  #query {
+    padding-right: 30px;  
+    position: relative;
+    height: 15px;
+    line-height: 15px;
+    font-size: 12px;
+  }
+  #query ~ i {
+    position: relative;
+    left: -30px;
+    cursor: pointer;
+  }
+
+  #tag-wrapper {
+    float: right;
+    margin-right: 0;
+    position: relative;
+    top: 2px;
+  }
+  #case-new, #case-save {
+    height: auto;
+    float: right;
+    position: relative;
+    top: 2px;
+  }
+  #case-save {
+    margin-right: 0;
+  }
+  #case-new {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  #opt-wrapper {
+    position: relative;
+    top: 2px;
+  }
+
+  #case-list {
+    margin-top: 98px;
+    border: 1px solid #96b7ce;
+    border-top-width: 0;
+    font-family: monospace;
+    font-size: 12px; 
+    margin 15px auto;
+    margin-left: 5px;
+    width: 99%;
+  }
+
+  .case {
+    margin-bottom: 0;  
+    background-color: white;
+    padding: 0;
+    height: 25px;
+    line-height: 25px;
+    border-width: 0;
+    border-bottom: 1px solid #CCC;
+    border-radius: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    color: #333;
+    clear: both;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }
+  .case-checked {
+    background-color: #f8ff75 !important;
+  }
+
+  div.case-head {
+    float: none;
+    font-weight: bold;
+    background-color: #dee7f2;
+    margin: auto;
+    width: 99%;
+    height: 25px;
+    position: relative;
+    left: 0px;
+    top: 7px;
+    border:1px solid #96b7ce;
+    border-top-width: 0;
+  }
+
+  .case > span {
+    display: block;
+    float: left;
+    margin: 0;
+    padding: 0 5px;
+    cursor: default;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .case-head > span {
+    text-align: center;  
+  }
+
+  div.case:hover {
+    background-color: #b3f9b6 !important;
+  }
+
+  .c-check { width: 20px; text-align: center; border-right: 1px solid #CCC;}
+  .c-check > input {position: relative; top: -2px; }
+  .c-url { width: 20%; border-right: 1px solid #CCC;}
+  .c-method { width: 100px; text-align: center; border-right: 1px solid #CCC;}
+  .c-params { width: 20%; border-right: 1px solid #CCC;}
+  .c-header { width: 10%; border-right: 1px solid #CCC;}
+  .c-memo { width: 20%; border-right: 1px solid #CCC;}
+  .c-run { width: 15px; text-align: center; cursor: pointer !important;}
+  .c-req { width: 15px; text-align: center; cursor: pointer !important;}
+  .c-move { width: 15px; text-align: center; cursor: pointer !important;}
+
+  .edit-form-wrapper {
+    position: fixed;
+    z-index: 1001;
+    top: 100px;
+    left: 100px;
+    border: 1px solid #006CA3;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    background-color: white;
+    width: 500px;
+    -moz-box-shadow: 3px 3px 7px #333333;
+    box-shadow: 3px 3px 7px #333333;
+  }
+  .edit-form-wrapper .alert {
+    background-color: #0088CC;
+    border: #006CA3;
+    border-radius: 4px 4px 0 0;
+    -moz-border-radius: 4px 4px 0 0;
+    color: white;
+    font-size: 15px;
+  }
+  #edit-form .controls {
+    margin-left: 75px;  
+  }
+  #edit-form label {
+    width: 60px; 
+  }
+</style>
+
+</head>
+
+
+
+<body class="container">
+
+  <div class="edit-form-wrapper" ng-controller="EditCtrl" ng-show="req" style="display: none;">
+    <div class="alert" ng-mousedown="start_drag($event)">
+      <span>[[ req.url ]] - [[ req.memo ]]</span>
+      <button class="close" id="edit-form-close" ng-click="cancel()">&times;</button>
+      <div class="btn-group pull-right">
+        <button class="btn btn-mini" id="edit-form-ok" ng-click="ok()">保存</button>
+        <button class="btn btn-mini" id="edit-form-saveas" ng-click="saveas()">另存</button>
+        <button class="btn btn-mini" id="edit-form-cancel" ng-click="cancel()">取消</button>
+      </div>
+    </div>
+    <form id="edit-form" class="form-horizontal" name="edit_form" ng-controller="EditFormCtrl" ng-blur="blur($event)">
+      <div class="control-group">
+        <label class="control-label" for="tags">标签</label>
+        <div class="controls">
+          <input class="span4" type="text" name="tags" ng-model="req.tags" ng-list />
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="memo">备注</label>
+        <div class="controls">
+          <input class="span4" type="text" name="memo" ng-model="req.memo" />
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="url">地址</label>
+        <div class="controls">
+          <input class="span4" type="text" name="url" ng-model="req.url"/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="method">方法</label>
+        <div class="controls">
+          <select class="span4" name="method" ng-model="req.method">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+          </select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="header">头</label>
+        <div class="controls">
+          <input class="span4" type="text" name="header" ng-model="req.header" req-head />
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="params">参数</label>
+        <div class="controls">
+          <textarea class="span4" name="params" rows="4" ng-model="req.params" req-params></textarea>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="response">响应</label>
+        <div class="controls">
+          <textarea class="span4" name="response" rows="2" ng-model="req.response"></textarea>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="description">描述</label>
+        <div class="controls">
+          <textarea class="span4" name="description" rows="2" ng-model="req.description"></textarea>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+
+  <div class="row">
+    <div class="span12 head" ng-controller="HeadCtrl">
+      <div id="opt-wrapper" ng-controller="OptCtrl" ng-show="case_checked.length" style="display: none;">
+        <select id="opt" class="input-medium" ng-model="value" ng-change="change()">
+          <option value="0">操作</option>
+          <option value="1">删除</option>
+          <option value="2">导出文档</option>
+        </select>
+      </div>
+      <div>
+        <span id="logo">AceTest</span>
+      </div>
+      <div ng-controller="QueryCtrl">
+        <input type="text" class="input-small search-query" id="query" ng-model="value" />
+        <i class="icon-search" ng-click="query()"></i>
+      </div>
+
+      <div id="case-save" class="btn btn-danger" ng-click="save()">保存</div>
+      <div id="case-new" class="btn" ng-click="new()">创建</div>
+
+      <div id="tag-wrapper" ng-controller="TagCtrl">
+        <select id="tag" class="input-medium" ng-model="tag" ng-change="change()" ng-options="x  for x in tag_list">
+          <option value="">所有标签</option>
+        </select>
+      </div>
+
+      <div class="alert case case-head" ng-controller="CaseHeadCtrl" id="case-head">
+        <span class="c-check"><input type="checkbox" ng-model="checked" ng-click="check()" /></span>
+        <span class="c-url">地址</span>
+        <span class="c-method">方法</span>
+        <span class="c-params">参数</span>
+        <span class="c-header">头</span>
+        <span class="c-memo">备注</span>
+        <span class="c-run"><i ng-class="status"></i></span>
+        <span class="c-req"></span>
+        <span class="c-move"></span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="row container" id="case-list" ng-controller="CaseCtrl" style="display: none;" ng-show="true" ng-init="show_req=false">
+
+    <div class="alert case" ng-repeat="o in obj_list | filter: filter" ng-class="o.checked && 'case-checked'" ng-mouseover="show_req=true;mouseover(o, $event.currentTarget)" ng-mouseleave="show_req=false;mouseleave(o, $event.currentTarget);" ng-dblclick="edit(o)" ng-style="{backgroundColor: o.bg_color || 'white'}" id="[[ o.id ]]">
+      <span class="c-check"><input type="checkbox" ng-model="o.checked" ng-click="check(o)" /></span>
+      <span class="c-url">[[ o.url ]]</span>
+      <span class="c-method">[[ get_method(o) ]]</span>
+      <span class="c-params">[[ get_params(o) ]]</span>
+      <span class="c-header">[[ get_header(o) ]]</span>
+      <span class="c-memo">[[ o.memo ]]</span>
+      <span class="c-run"><i ng-class="o.status || 'icon-play'" ng-click="run(o)"></i></span>
+      <span class="c-req"><i class="icon-screenshot" ng-show="show_req" title="新窗口打开请求" ng-click="req(o)"></i></span>
+      <span class="c-move"><i class="icon-resize-vertical" ng-show="show_req" title="拖动排序" ng-mousedown="start_drag(o)"></i></span>
+    </div>
+
+    <!--<div class="alert case">
+      <span class="c-check"><input type="checkbox" /></span>
+      <span class="c-url">/path</span>
+      <span class="c-method">POST</span>
+      <span class="c-params">{}</span>
+      <span class="c-header">{}</span>
+      <span class="c-memo">哈哈</span>
+      <span class="c-run"><i class="icon-play"></i></span>
+      <span class="c-req"></span>
+      <span class="c-move"></span>
+    </div>-->
+
+  </div>
+
+  <div class="row" id="footer">
+    Copyright &copy; 2011-2013 Yesheng Zou <span id="ver">Ver 0.3.0</span>
+  </div>
+  <div ng-view></div>
+
+
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+//头部部件
+var HeadCtrl = function($scope, $http){
+  $scope.new = function(){
+    var s = angular.element(document.getElementById('edit-form')).scope().$parent;
+    s.o_req = {method: 'GET', url: '', params: [], header: [],
+               memo: '', tags: [], create: 0, id: undefined};
+  };
+
+  //保存
+  $scope.save = function(){
+    var s = angular.element(document.getElementById('case-list')).scope();
+    var p = $http.post(document.getElementById('create-url').content, s.obj_list);
+    p.success(function(response){
+      if(response.result == 0){
+        alert('保存成功');
+      } else {
+        alert('失败, ' + response.msg);
+      }
+    });
+
+    p.error(function(error){
+      alert('出现了错误, ' + error);
+    });
+  }
+}
+
+//操作控制
+var OptCtrl = function($scope, $rootScope){
+  $scope.case_checked = [];
+  $scope.value = '0';
+
+  var del = function(){
+    var $case_list_scope = angular.element(document.getElementById('case-list')).scope();
+    for(var i = 0, l = $scope.case_checked.length; i < l; i++){
+      for(var j = 0, k = $case_list_scope.obj_list.length; j < k; j++){
+        if($case_list_scope.obj_list[j].id == $scope.case_checked[i]){
+          $case_list_scope.obj_list.splice(j, 1);
+          break;
+        }
+      }
+    }
+    $scope.case_checked.splice(0, $scope.case_checked.length);
+  };
+
+  //MB, export也是关键词
+  var export_xx = function(){
+    var obj_list = [];
+    var $case_list_scope = angular.element(document.getElementById('case-list')).scope();
+    for(var i = 0, l = $case_list_scope.obj_list.length; i < l; i++){
+      var obj = $case_list_scope.obj_list[i];
+      if(obj.checked){obj_list.push(obj)};
+    }
+    var $form = $('<form action="' + $('#export-url').attr('content') + '" method="post" target="_blank"></form>');
+    //$form.append("<input type='hidden' value='" + angular.toJson(obj_list) + "' name='obj_list' />");
+    $form.append("<input type='hidden' value='' name='obj_list' />");
+    $('body').append($form);
+    $('input[name="obj_list"]', $form).val(angular.toJson(obj_list));
+    $form.submit();
+    $form.remove();
+  }
+
+  $scope.change = function(){
+    ({'0': angular.noop,
+      '1': del,
+      '2': export_xx})[$scope.value]();
+    $scope.value = '0';
+  }
+}
+
+//头部的全选控制
+var CaseHeadCtrl = function($scope, $http){
+
+  //一定要触发时再去获取scope
+  //只处理能看到的实例
+  $scope.check = function(){
+    var $case_list_scope = angular.element(document.getElementById('case-list')).scope();
+    //先取消
+    $case_list_scope.obj_list.forEach(function(o){
+      if(o.checked){
+        o.checked = false;
+        $case_list_scope.check(o);
+      }
+    });
+    if($scope.checked){
+      $case_list_scope.obj_list.forEach(function(o){
+        if(o.show){
+          o.checked=$scope.checked;
+          $case_list_scope.check(o);
+        }
+      });
+    }
+  }
+
+}
+
+//请求列表
+var CaseCtrl = function($scope, $http, $element, $rootScope, $timeout){
+
+  var $opt_scope = angular.element(document.getElementById('opt-wrapper')).scope();
+  var $tag_scope = angular.element(document.getElementById('tag')).scope();
+
+  var p = $http.get(document.getElementById('read-url').content);
+  p.success(function(response){
+    $scope.obj_list = response.obj_list || [];
+    $tag_scope.obj_list = $scope.obj_list;
+  });
+
+  $scope.check = function(req){
+    if(req.checked){
+      $opt_scope.case_checked.push(req.id);
+    } else {
+      for(var i = 0, l = $opt_scope.case_checked.length; i < l; i++){
+        if($opt_scope.case_checked[i] == req.id){
+          $opt_scope.case_checked.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
+
+  //拖动与元素事件配合,实现列表中成员的移动 EOF <<
+
+  $scope.on_drag = false;
+  $scope.hover_item = null;
+
+  $scope.start_drag = function(req){
+    $scope.on_drag = true;
+    req.bg_color = 'yellow';
+    $body = angular.element(document);
+    $body.bind('mouseup', function(eventObj){
+      $body.unbind('mouseup');
+
+      $timeout(function(){ req.bg_color = 'white' }, 1000);
+
+      //移动对象
+      (function(){
+        if(!$scope.hover_item){return}
+        //把drag放在hover的前面
+        var drag = req.id;
+        var hover = $scope.hover_item.id;
+
+        for(var i = 0, l = $scope.obj_list.length; i < l; i++){
+          var id = $scope.obj_list[i].id;
+          if(id === drag){
+            drag = i;
+            if(angular.isNumber(drag) && angular.isNumber(hover)){ break; }
+            else{ continue; }
+          }
+          if(id === hover){
+            hover = i;
+            if(angular.isNumber(drag) && angular.isNumber(hover)){ break; }
+            else{ continue; }
+          }
+        }
+
+        var t = $scope.obj_list[drag];
+        if(drag > hover){
+          //下推
+          for(var i = drag; i > hover; i--){
+            $scope.obj_list[i] = $scope.obj_list[i-1];
+          }
+          $scope.obj_list[hover] = t;
+        } else {
+          //上推 
+          for(var i = drag; i < hover - 1; i++){
+            $scope.obj_list[i] = $scope.obj_list[i+1];
+          }
+          $scope.obj_list[hover - 1] = t;
+        }
+      })();
+
+
+      $scope.on_drag = false;
+      angular.element($scope.hover_item).css('border-top', '0px');
+      $scope.hover_item = null;
+    });
+  }
+
+  $scope.mouseover = function(req, element){
+    if(!$scope.on_drag){return}
+    angular.element(element).css('border-top', '2px solid red');
+    $scope.hover_item = element;
+  }
+
+  $scope.mouseleave = function(req, element){
+    if(!$scope.on_drag){return}
+    angular.element(element).css('border-top', '0px');
+    $scope.hover_item = null;
+  }
+
+  // <<
+
+  //运行一个请求
+  $scope.run = function(req){
+    req.status = 'icon-refresh';
+    var header = {};
+    var params = {};
+    angular.forEach(req.header, function(v){
+      header[v[0]] = v[1];
+    });
+    angular.forEach(req.params, function(v){
+      params[v[0]] = v[1];
+    });
+
+    var obj = {
+      method: req.method || 'GET',
+      url: req.url,
+      headers: header,
+      cache: false,
+      timeout: 10 * 1000
+    }
+    if (obj.method == 'GET') {
+      obj.params = params;
+      obj.params._ = (new Date()).valueOf();
+    } else {
+      obj.data = params;
+      obj.data._ = (new Date()).valueOf();
+      obj.headers = {'Content-Type': 'application/x-www-form-urlencoded'};
+      obj.transformRequest = [function(d){
+        var list = [];
+        angular.forEach(d, function(v, k){
+          list.push(encodeURIComponent(k) + "=" + encodeURIComponent(v));
+        });
+        return list.join('&').replace(/%20/g, '+');
+      }];
+    }
+    var p = $http(obj);
+
+    p.success(
+      function(response){
+        if($scope.check_response(req, response)){
+          req.status = 'icon-ok';  
+        } else {
+          req.status = 'icon-remove';  
+        }
+      }
+    );
+
+    p.error(
+      function(){
+        req.status = 'icon-remove';  
+      }
+    );
+  }
+
+  //编辑
+  $scope.edit = function(req){
+    var s = angular.element(document.getElementById('edit-form')).scope().$parent;
+    s.o_req = req;
+  }
+
+  //新窗口打开一个请求
+  $scope.req = function(req){
+    var $body = angular.element(document.body);
+    var $form = angular.element(document.createElement('form'));
+    $form.attr('method', req.method || 'GET');
+    $form.attr('action', req.url);
+    $form.attr('target', '_blank');
+    for(var k in req.params){
+      $form.append('<input type="hidden" name="' + k + '" value="' + req.params[k] + '" />');
+    }
+    $body.append($form);
+    $form[0].submit();
+    $form.remove();
+  }
+
+  $scope.check_response = function(req, res){
+    try {
+      js = angular.fromJson(res);
+      return js.result == 0;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  $scope.get_method = function(req){
+    for(var i = 0, l = req.params.length; i < l; i++){
+      if(req.params[i][0] == '_method'){
+        return req.params[i][1] ? req.params[i][1].toUpperCase() : req.method;
+      }
+    }
+    return req.method;
+  }
+
+  $scope.get_params = function(req){
+    var p = [];
+    angular.forEach(req.params, function(v){
+      p.push(v[0]);
+    });
+    return p.join(', ') || '--';
+  }
+
+  $scope.get_header = function(req){
+    var p = [];
+    angular.forEach(req.header, function(v){
+      p.push(v[0]);
+    });
+    return p.join(', ') || '--';
+  }
+
+  $scope.filter = function(o){
+    o.show = true;
+    return o.show;
+  }
+}
+
+
+//查询
+var QueryCtrl = function($scope, $location, $element){
+  $scope.value = '';
+  $element.find('input').bind('keypress',
+    function(eventObj){
+      if(eventObj.keyCode == 13){
+        $element.find('i').triggerHandler('click');
+      }
+    }
+  );
+
+  $scope.query = function(){
+    $location.path('/q/' + $scope.value);
+  }
+}
+
+//标签
+var TagCtrl = function($scope, $location, $element){
+  $scope.obj_list = [];
+  $scope.tag_list = [];
+
+  $scope.query = function(){
+    if(!$scope.tag || $scope.tag == ''){
+      $location.path('/');
+    } else {
+      $location.path('/tag/' + $scope.tag);
+    }
+  }
+  $scope.change = function(){
+    $scope.query();
+  }
+
+  $scope.$watch('obj_list', function(new_v, old_v){
+    var list = [];
+    var exists = {};
+    angular.forEach(new_v, function(c){
+      angular.forEach(c.tags, function(t){
+        if(!exists[t]){
+          list.push(t);
+          exists[t] = true;
+        }
+      });
+    });
+    $scope.tag_list = list;
+  });
+}
+
+
+//默认全显示
+var DefaultCaseCtrl = function($routeParams){
+  $scope = angular.element(document.getElementById('case-list')).scope();
+  $scope.filter = function(o){
+    o.show = true;
+    return o.show;
+  }
+}
+
+//选择标签
+var TagCaseCtrl = function($routeParams){
+  $scope = angular.element(document.getElementById('case-list')).scope();
+  $scope.filter = function(o){
+    o.show = o.tags.indexOf($routeParams.tag) >= 0;
+    return o.show;
+  }
+  angular.element(document.getElementById('tag')).scope().tag = $routeParams.tag;
+}
+
+//查询
+var QueryCaseCtrl = function($routeParams){
+  $scope = angular.element(document.getElementById('case-list')).scope();
+  $scope.filter = function(o){
+    o.show = (o.url + o.memo).indexOf($routeParams.q) >= 0;
+    return o.show;
+  }
+}
+
+//编辑
+var EditFormCtrl = function($scope){
+
+  //解决 Shift-Insert 复制问题
+  $scope.blur = function($event){
+    var $n = $($event.target);
+    var name = $n.attr('name');
+    var ctrl = $scope.edit_form[name];
+    if (ctrl) { ctrl.$setViewValue($n.val()) }
+  }
+
+}
+
+var EditCtrl = function($scope, $element, $timeout){
+  var $body = angular.element(document);
+  $scope.o_req = undefined;
+  $scope.req = undefined;
+
+  $scope.$watch('o_req', function(new_v, old_v){
+    if(old_v){ old_v.bg_color = 'white' }
+    if(new_v){ new_v.bg_color = 'yellow' }
+    $scope.req = angular.copy($scope.o_req);
+    if(new_v){
+      $timeout(function(){ $element.find('input')[0].focus(); }, 300);
+    }
+  });
+
+  (function(){
+    $element.on('keypress', function(eventObj){
+      if(eventObj.keyCode == 10 && eventObj.ctrlKey){
+        $element.find('button[type="submit"]').click();
+      }
+    });
+  })();
+
+  $scope.cancel = function(){
+    $scope.o_req = undefined;
+    $scope.req = undefined;
+  }
+
+  $scope.saveas = function(){
+    delete $scope.req.id;
+    $scope.ok();
+  }
+
+  $scope.ok = function(){
+    if($scope.req.id){
+      angular.forEach($scope.req, function(v, k){
+        $scope.o_req[k] = v;
+      });
+    } else {
+      //新建
+      $scope.req.id = 'C' + (new Date()).valueOf();
+      $scope.req.create = parseInt((new Date()).valueOf() / 1000);
+      angular.element(document.getElementById('case-list')).scope().obj_list.unshift($scope.req);
+      $timeout(angular.bind($scope.req, function(){ this.bg_color = 'white' }), 1000);
+    }
+
+    $scope.o_req = undefined;
+    $scope.req = undefined;
+  }
+
+  $scope.start_drag = function(eventObj){
+    var ox = eventObj.pageX;
+    var oy = eventObj.pageY;
+    var ex = parseInt(($element.css('left') || '100px').replace(/(\d+)px/, '$1'));
+    var ey = parseInt(($element.css('top') || '100px').replace(/(\d+)px/, '$1'));
+
+    $body.bind('mousemove',
+      function(eventObj){
+        var dx = eventObj.pageX - ox;
+        var dy = eventObj.pageY - oy;
+        $element.css({'left': (ex + dx) + 'px',
+                      'top': (ey + dy) + 'px',
+                      'cursor': 'move',
+                      'opacity': '0.8'});
+      }
+    );
+
+    $body.bind('mouseup',
+      function(){
+        $body.unbind('mousemove');  
+        $body.unbind('mouseup');  
+        $element.css({'cursor': 'default',
+                      'opacity': '1'});
+      }
+    );
+  }
+}
+
+
+angular.trim = function(value){
+  return angular.isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
+}
+
+var app = angular.module('AceTest', [],
+  function($interpolateProvider, $routeProvider){
+    $interpolateProvider.startSymbol('[[');
+    $interpolateProvider.endSymbol(']]');
+
+    $routeProvider.when('/',
+      {
+        template: '[[ ]]',
+        controller: DefaultCaseCtrl
+      }
+    );
+
+    $routeProvider.when('/tag/:tag',
+      {
+        template: '[[ ]]',
+        controller: TagCaseCtrl
+      }
+    );
+
+    $routeProvider.when('/q/:q',
+      {
+        template: '[[ ]]',
+        controller: QueryCaseCtrl
+      }
+    );
+
+    $routeProvider.otherwise(
+      {
+        redirectTo: '/'
+      }
+    );
+
+    (function(){
+      $(window).on('beforeunload', function(){
+        return '关闭/刷新 页面前请确定相关操作已经【保存】';
+      });
+    })();
+
+  }
+);
+
+app.directive('reqHead', function(){
+  return {
+    require: 'ngModel',
+    link: function(scope, element, attr, ctrl){
+      var parse = function(value){
+        var list = [];
+        angular.forEach(value.split(','),
+          function(v){
+            if(angular.trim(v) != ''){
+              var p = v.split(':');
+              var k = p.shift();
+              list.push([angular.trim(k), angular.trim(p.join(':'))]);
+            }
+          }
+        );
+        return list;
+      }
+      var format = function(value){
+        var list = [];
+        angular.forEach(value, function(v){
+          list.push(v[0] + ': ' + v[1]);
+        });
+        return list.join(', ');
+      }
+
+      ctrl.$parsers.push(parse);
+      ctrl.$formatters.push(format);
+    }
+  };
+});
+
+
+app.directive('reqParams', function(){
+  return {
+    require: 'ngModel',
+    link: function(scope, element, attr, ctrl){
+      var parse = function(value){
+        var list = [];
+        angular.forEach(value.split('\n'),
+          function(v){
+            if(angular.trim(v) != ''){
+              var p = v.split(':');
+              var k = p.shift();
+              list.push([angular.trim(k), angular.trim(p.join(':'))]);
+            }
+          }
+        );
+        return list;
+      }
+      var format = function(value){
+        var list = [];
+        angular.forEach(value, function(v){
+          list.push(v[0] + ': ' + v[1]);
+        });
+        return list.join('\n');
+      }
+
+      ctrl.$parsers.push(parse);
+      ctrl.$formatters.push(format);
+    }
+  };
+});
+
+
+//失去焦点使用 jQuery 的扩展支持冒泡
+app.directive('ngBlur', function($parse){
+  return function(scope, element, attr){
+    var fn = $parse(attr['ngBlur']);
+    $(element).on('focusout', function(event){
+      fn(scope, {$event: event});
+    });
+  }
+});
+
+</script>
+</body>
+</html>

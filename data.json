@@ -1,0 +1,70 @@
+[
+ {
+  "tags": [
+   "api"
+  ], 
+  "url": "?_method=read", 
+  "memo": "读取实例", 
+  "id": "C1368673717984", 
+  "header": [], 
+  "params": [], 
+  "response": "id: 实例ID\nurl: 地址\nmethod: 方法\nparams: 参数(列表对)\nheader: 头(列表对)\nmemo: 备注\ntags: 标签(逗号分割)\ncreate: 创建时间\ndescription: 描述\nresponse: 响应", 
+  "create": 1368673717, 
+  "method": "GET"
+ }, 
+ {
+  "description": "1. 请求出去的数据是 json 格式, 不是传统的 www-form-urlencode \n2. 请求出去的是一个列表, 列表的成员是对象, 对象各属性如\"参数\"中的说明.", 
+  "tags": [
+   "api"
+  ], 
+  "url": "?_method=create", 
+  "memo": "保存实例", 
+  "method": "POST", 
+  "header": [], 
+  "params": [
+   [
+    "id", 
+    "实例ID"
+   ], 
+   [
+    "url", 
+    "地址"
+   ], 
+   [
+    "method", 
+    "方法"
+   ], 
+   [
+    "params", 
+    "参数(列表对)"
+   ], 
+   [
+    "header", 
+    "头(列表对)"
+   ], 
+   [
+    "memo", 
+    "备注"
+   ], 
+   [
+    "tags", 
+    "标签(逗号分割)"
+   ], 
+   [
+    "create", 
+    "创建时间"
+   ], 
+   [
+    "description", 
+    "描述"
+   ], 
+   [
+    "response", 
+    "响应"
+   ]
+  ], 
+  "id": "C1368673378664", 
+  "create": 1368673378, 
+  "response": "{'result': 0}"
+ }
+]
