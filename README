@@ -6,4 +6,80 @@ YS.Zou
 %%toc
 
 
+AUTHOR: Yesheng Zou <yeshengzou@gmail.com>
+
+LICENSE: GPLv3
+
+COPYRIGHT: copyright (c) 2013 Yesheng Zou
+
+
 方便的HTTP请求创建与文档化工具.
+
+
+AceTestII 是我在 AceTest (https://github.com/AceFantasy/AceTest) 之后重新写的一个 HTTP 请求的组织管理工具.
+
+之前做 AceTest 时想了比较多的功能, 后来在实际使用过程当中, 发现需要的功能只是比较简单的一些. 反而如何更容易地嵌入到各个项目当中是一个比较重要的需求.
+
+于是, 我考虑把功能改可能地放到前端实现, 资源文件尽可能使用现成的 CDN 服务. 后端只做最基本的数据存储功能.
+
+这样的话, 可以很容易地把 AceTestII 嵌入到任何的 Web 项目当中. 具体来说, 任何一个项目, 只需要做三件事, 就可以使用 AceTestII 提供的功能:
+
+- 一个 URL 可以访问到 ``AceTestII/index.html``
+- 一个资源用以保存所有的请求实例 (默认是 ``?_method=create`` ).
+- 一个资源用以获取保存的所有请求实例 (默认是 ``?_method=read`` ).
+
+
+除此之后, 因为经常用到, 直接提供了一个附加功能, 就是把请求实例导出为文档, 默认资源地址是: ``?_method=export`` .
+
+AceTestII 的核心是 ``index.html`` 文件, 数据的保存与导出需要后端服务来完成, ``index.html`` 只是发出请求.
+
+后端的实现项目中包括了一个 Python 的, 以 Tornado 框架为例的例子. 业务就是 ``read, create, export`` 三个方法.
+
+``read`` 方法是获取所有已保存的请求实例(直接读取 json 数据文件):
+
+```
+def read(self):
+    if os.access('data.json', os.F_OK):
+        import json
+        with open('data.json', 'rb') as f:
+            data = f.read()
+
+        self.__class__.CASE_LIST = json.loads(data.decode('utf8'))
+    self.write({'result': 0, 'msg': '', 'obj_list': self.__class__.CASE_LIST})
+
+```
+
+
+``create`` 方法是保存所有的请求实例(以 json 数据格式直接存到文件):
+
+```
+def create(self):
+    obj_list = tornado.escape.json_decode(self.request.body)
+    fields = set(['id', 'url', 'method', 'params', 'header', 'memo', 'tags', 'create', 'description', 'response'])
+    for o in obj_list:
+        for k in o.keys():
+            if k not in fields:
+                del o[k]
+    self.__class__.CASE_LIST = obj_list
+    self.write({'result': 0})
+
+    import json
+    with open('data.json', 'wb') as f:
+        f.write(json.dumps(obj_list, indent=True, ensure_ascii=False).encode('utf8') + '\n')
+```
+
+
+``export`` 是把传上来的请求实例以模板渲染之后返回:
+
+```
+def export(self):
+    import tornado.template
+    s = ''' ... '''
+    tpl = tornado.template.Template(s)
+    obj_list = tornado.escape.json_decode(self.get_argument('obj_list', '[]'))
+
+    s = tpl.generate(obj_list=obj_list)
+    self.set_header('content-type', 'text/plain')
+    self.write(s)
+```
+
