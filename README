@@ -15,6 +15,11 @@ COPYRIGHT: copyright (c) 2013 Yesheng Zou
 
 方便的HTTP请求创建与文档化工具.
 
+在这个工具当中, 可以很方便地定义一个 HTTP 请求, 然后发出请求通过浏览器开发工具查看结果. 并且, 在定义请求时把具体的参数写成说明就是一份请求接口的说明文档.
+
+所有功能都是前端实现, 很容易嵌入到任何的 Web 项目中去使用. 而 ``index.html`` 中使用的 ``angularjs`` , ``jquery`` , ``bootstrape`` 也都是直接使用的现成的 CDN 服务.
+
+页面的示例: http://zouyesheng.com/AceTestII/  (无法保存)
 
 AceTestII 是我在 AceTest (https://github.com/AceFantasy/AceTest) 之后重新写的一个 HTTP 请求的组织管理工具.
 
