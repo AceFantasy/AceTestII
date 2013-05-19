@@ -60,6 +60,10 @@
     font-size: 25px; 
     font-weight: bold;
   }
+  #logo a {
+    color: #333;
+    text-decoration: none;
+  }
 
   #query {
     padding-right: 30px;  
@@ -286,7 +290,7 @@
         </select>
       </div>
       <div>
-        <span id="logo">AceTest</span>
+        <span id="logo"><a href="https://github.com/AceFantasy/AceTestII" target="_blank">AceTest II</a></span>
       </div>
       <div ng-controller="QueryCtrl">
         <input type="text" class="input-small search-query" id="query" ng-model="value" />
@@ -348,7 +352,7 @@
   </div>
 
   <div class="row" id="footer">
-    Copyright &copy; 2011-2013 Yesheng Zou <span id="ver">Ver 0.3.0</span>
+    Copyright &copy; 2011-2013 <a href="http://zouyesheng.com" target="_blank">Yesheng Zou</a> <span id="ver">Ver 0.3.0</span>
   </div>
   <div ng-view></div>
 
