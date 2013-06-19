@@ -11,7 +11,8 @@ import tornado.escape
 
 from tornado.options import define, options
 
-define("port", default=8888, help=u"指定启动端口", type=int)
+if __name__ == '__main__':
+    define("port", default=8888, help=u"指定启动端口", type=int)
 
 tornado.options.parse_command_line()
 IL = tornado.ioloop.IOLoop.instance()
